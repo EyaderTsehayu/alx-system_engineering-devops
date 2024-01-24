@@ -1,25 +1,25 @@
 server {
-        listen 80 default_server;
-	listen [::]:80 default_server;
-	add_header X-Served-By "2177-web-01";
-	root /var/www/html;
-	index index.html index.htm;
+    listen 80;
+    server_name 127.0.0.1 35.190.188.208;
 
-	location /airbnb-onepage/ {
-		alias ~/Holberton_Projects/Airbnb_clone_v2/;
-		index index.html index.htm;
-		proxy_pass http://0.0.0.0:5000;
-	}
+    location /airbnb-onepage/ {
+        include proxy_params;
+	proxy_pass http://localhost:5000/airbnb-onepage/;
+    }
 
-	location ~ /airbnb-dynamic/number_odd_or_even/(\d+)$ {
-		proxy_pass http://127.0.0.1:5001/number_odd_or_even/$1;
-	}
+    location /airbnb-dynamic/number_odd_or_even/ {
+        rewrite /airbnb-dynamic/(.*) $1 break;
+        include proxy_params;
+	proxy_pass http://localhost:5001/;
+    }
 
-	location /api {
-		proxy_pass http://127.0.0.1:5002/api;
-	}
+    location /api/ {
+        include proxy_params;
+	proxy_pass http://localhost:5002/api/;
+    }
 
-	rewrite ^/redirect_me https://github.com/EstephaniaCalvoC/ permanent;
-        error_page 404 /my_404.html;
-        location = /my_404.html {root /usr/share/nginx/html; internal;}
+    location / {
+        include proxy_params;
+	proxy_pass http://localhost:5003/;
+    }
 }
